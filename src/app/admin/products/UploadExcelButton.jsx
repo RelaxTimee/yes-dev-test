@@ -28,8 +28,8 @@ export default function UploadExcelButton() {
 
   return (
     <div>
-      <label className={`px-4 py-2 rounded cursor-pointer transition ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} text-white`}>
-        {loading ? 'กำลังนำเข้า...' : '+ นำเข้า Excel'}
+      <label className={`px-5 py-2.5 rounded-full cursor-pointer transition shadow-sm font-medium ${loading ? 'bg-stone-400' : 'bg-rose-500 hover:bg-rose-600'} text-white`}>
+        {loading ? '⏳ กำลังนำเข้า...' : '📥 นำเข้า Excel'}
         <input type="file" accept=".xlsx" onChange={handleUpload} disabled={loading} className="hidden" />
       </label>
     </div>

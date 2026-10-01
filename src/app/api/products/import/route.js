@@ -24,12 +24,20 @@ export async function POST(req) {
       const rowNum = index + 2; 
       const { sku, name, category, price, size, description, how_to_use, status } = row;
 
-      if (!sku || !name) {
-        errors.push(`แถวที่ ${rowNum}: ข้อมูลบังคับ (sku, name) หายไป ไม่สามารถนำเข้าได้`);
+      if (!sku) {
+        errors.push(`แถวที่ ${rowNum}: ข้อมูล SKU หายไป ไม่สามารถนำเข้าได้เลย`);
         continue;
       }
 
       let isError = false;
+      let safeName = name ? name.toString() : '';
+      
+      if (!safeName) {
+        errors.push(`แถวที่ ${rowNum} (${sku}): ชื่อสินค้าหายไป (ระบบเซ็ตเป็น "ไม่มีชื่อ" ให้ก่อน)`);
+        safeName = 'ไม่มีชื่อ (กรุณาแก้ไข)';
+        isError = true;
+      }
+
       let safePrice = typeof price === 'string' ? parseFloat(price.replace(/,/g, '')) : price;
       let safeStatus = (status || 'active').toString().toLowerCase();
 
@@ -50,8 +58,8 @@ export async function POST(req) {
       try {
         await prisma.product.upsert({
           where: { sku: sku.toString().toUpperCase() },
-          update: { name: name.toString(), category: category?.toString() || null, price: safePrice, size: size?.toString() || null, description: description?.toString() || null, how_to_use: how_to_use?.toString() || null, status: safeStatus },
-          create: { sku: sku.toString().toUpperCase(), name: name.toString(), category: category?.toString() || null, price: safePrice, size: size?.toString() || null, description: description?.toString() || null, how_to_use: how_to_use?.toString() || null, status: safeStatus },
+          update: { name: safeName, category: category?.toString() || null, price: safePrice, size: size?.toString() || null, description: description?.toString() || null, how_to_use: how_to_use?.toString() || null, status: safeStatus },
+          create: { sku: sku.toString().toUpperCase(), name: safeName, category: category?.toString() || null, price: safePrice, size: size?.toString() || null, description: description?.toString() || null, how_to_use: how_to_use?.toString() || null, status: safeStatus },
         });
         successCount++;
       } catch (err) {

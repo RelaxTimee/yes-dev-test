@@ -24,24 +24,26 @@ export default async function ProductsPage() {
   }
 
   return (
-    <div className="p-6 text-black">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">รายการสินค้า</h1>
+    <div className="p-8 text-stone-800">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-serif text-stone-900">คลังสินค้า</h1>
+          <p className="text-stone-500 mt-1">จัดการและอัปเดตข้อมูลผลิตภัณฑ์ Luma Skin</p>
+        </div>
         <UploadExcelButton />
       </div>
 
       {topProduct && (
-        <div className="mb-6 bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center gap-4 shadow-sm">
-          <div className="text-4xl">🔥</div>
+        <div className="mb-8 bg-white border-l-4 border-rose-400 rounded-r-lg p-5 flex items-center gap-5 shadow-sm">
+          <div className="text-4xl bg-rose-50 w-16 h-16 flex items-center justify-center rounded-full text-rose-500">✨</div>
           <div>
-            <h2 className="text-sm font-bold text-yellow-800 uppercase tracking-wide">สินค้าที่ถูกสแกน QR มากที่สุด</h2>
-            <p className="text-lg font-medium text-gray-900">{topProduct.name} (SKU: {topProduct.sku})</p>
-            <p className="text-sm text-gray-600">สแกนไปแล้วทั้งหมด <span className="font-bold text-black">{topScanCount}</span> ครั้ง</p>
+            <h2 className="text-xs font-bold text-rose-500 uppercase tracking-widest mb-1">Most Popular Product</h2>
+            <p className="text-xl font-serif text-stone-900">{topProduct.name} <span className="text-sm font-sans text-stone-400 ml-2">(SKU: {topProduct.sku})</span></p>
+            <p className="text-sm text-stone-500 mt-1">สแกนไปแล้วทั้งหมด <span className="font-bold text-rose-600">{topScanCount}</span> ครั้ง</p>
           </div>
         </div>
       )}
 
-      {/* ใช้ Client Component เพื่อให้รองรับ Search & Sort */}
       <ProductTable initialProducts={products} />
     </div>
   );

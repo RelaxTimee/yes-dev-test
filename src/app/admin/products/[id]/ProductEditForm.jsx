@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { QRCodeCanvas } from 'qrcode.react';
 
@@ -10,8 +10,13 @@ export default function ProductEditForm({ product }) {
     size: product.size || '', description: product.description || '', how_to_use: product.how_to_use || '', status: product.status || 'active',
   });
   
-  const [imageFile, setImageFile] = useState(null);
-  const [previewImage, setPreviewImage] = useState(product.imageUrl || null);
+  // แปลง images จาก JSON string ให้เป็น Array
+  const initImages = product.images ? JSON.parse(product.images) : (product.imageUrl ? [product.imageUrl] : []);
+  
+  const [existingImages, setExistingImages] = useState(initImages);
+  const [newFiles, setNewFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
+  
   const [loading, setLoading] = useState(false);
 
   const [qrSize, setQrSize] = useState(200);
@@ -22,18 +27,35 @@ export default function ProductEditForm({ product }) {
   const isDataIncomplete = product.price <= 0;
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return alert('รองรับเฉพาะไฟล์ JPG, PNG และ WEBP');
-    if (file.size > 2 * 1024 * 1024) return alert('ขนาดไฟล์ต้องไม่เกิน 2 MB');
+    const files = Array.from(e.target.files);
+    const validFiles = [];
+    const newPreviews = [];
 
-    const img = new window.Image();
-    img.src = URL.createObjectURL(file);
-    img.onload = () => {
-      if (img.width < 800 || img.height < 800) alert('คำเตือน: รูปภาพควรมีขนาดอย่างน้อย 800 x 800 px');
-      setImageFile(file);
-      setPreviewImage(img.src);
-    };
+    files.forEach(file => {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return alert(`ไฟล์ ${file.name} ไม่รองรับ (รับเฉพาะ JPG, PNG, WEBP)`);
+      if (file.size > 2 * 1024 * 1024) return alert(`ไฟล์ ${file.name} ใหญ่เกิน 2 MB`);
+      validFiles.push(file);
+      newPreviews.push(URL.createObjectURL(file));
+    });
+
+    setNewFiles([...newFiles, ...validFiles]);
+    setPreviewImages([...previewImages, ...newPreviews]);
+  };
+
+  const removeExistingImage = (index) => {
+    const updated = [...existingImages];
+    updated.splice(index, 1);
+    setExistingImages(updated);
+  };
+
+  const removeNewFile = (index) => {
+    const updatedFiles = [...newFiles];
+    updatedFiles.splice(index, 1);
+    setNewFiles(updatedFiles);
+
+    const updatedPreviews = [...previewImages];
+    updatedPreviews.splice(index, 1);
+    setPreviewImages(updatedPreviews);
   };
 
   const handleSubmit = async (e) => {
@@ -41,7 +63,14 @@ export default function ProductEditForm({ product }) {
     setLoading(true);
     const submitData = new FormData();
     Object.keys(formData).forEach(key => submitData.append(key, formData[key]));
-    if (imageFile) submitData.append('image', imageFile);
+    
+    // ส่งข้อมูลรูปเก่าที่เหลืออยู่
+    submitData.append('existingImages', JSON.stringify(existingImages));
+    // ส่งไฟล์รูปใหม่ทั้งหมด
+    newFiles.forEach(file => {
+      submitData.append('images', file);
+    });
+
     submitData.append('existingImageUrl', product.imageUrl || '');
 
     const res = await fetch(`/api/products/${product.id}`, { method: 'PUT', body: submitData });
@@ -63,10 +92,29 @@ export default function ProductEditForm({ product }) {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-black">
       <div className="space-y-6">
         <div className="bg-white p-6 rounded shadow">
-          <h2 className="text-xl font-bold mb-4">รูปภาพสินค้า</h2>
-          {previewImage ? <img src={previewImage} alt="Preview" className="w-full aspect-square object-cover rounded border" /> : <div className="w-full aspect-square bg-gray-100 flex items-center justify-center rounded border"><span className="text-gray-400">Placeholder (ยังไม่มีรูป)</span></div>}
-          <input type="file" accept="image/jpeg, image/png, image/webp" onChange={handleImageChange} className="mt-4 w-full" />
+          <h2 className="text-xl font-bold mb-4">รูปภาพสินค้า (ใส่ได้หลายรูป)</h2>
+          
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {/* รูปเก่า */}
+            {existingImages.map((imgUrl, idx) => (
+              <div key={`exist-${idx}`} className="relative aspect-square border rounded overflow-hidden group">
+                <img src={imgUrl} className="w-full h-full object-cover" />
+                <button type="button" onClick={() => removeExistingImage(idx)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">✕</button>
+              </div>
+            ))}
+            {/* รูปใหม่ที่เพิ่งเลือก */}
+            {previewImages.map((imgUrl, idx) => (
+              <div key={`new-${idx}`} className="relative aspect-square border-2 border-green-300 rounded overflow-hidden group">
+                <img src={imgUrl} className="w-full h-full object-cover" />
+                <button type="button" onClick={() => removeNewFile(idx)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">✕</button>
+              </div>
+            ))}
+          </div>
+
+          <input type="file" multiple accept="image/jpeg, image/png, image/webp" onChange={handleImageChange} className="mt-4 w-full text-sm" />
+          <p className="text-xs text-gray-400 mt-2">เลือกไฟล์ได้ทีละหลายไฟล์ (ลากคลุมตอนเลือกไฟล์)</p>
         </div>
+
         <div className="bg-white p-6 rounded shadow">
           <h2 className="text-xl font-bold mb-4">สร้างและปรับแต่ง QR Code</h2>
           <div ref={qrRef} className="flex justify-center p-4 border rounded mb-4" style={{ backgroundColor: qrBgColor }}><QRCodeCanvas value={publicUrl} size={qrSize} bgColor={qrBgColor} /></div>

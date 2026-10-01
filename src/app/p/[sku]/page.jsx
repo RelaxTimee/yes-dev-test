@@ -19,23 +19,38 @@ export default async function PublicProductPage({ params }) {
     });
   } catch(e) {}
 
+  // Parse รูปภาพที่ได้จาก DB
+  const images = product.images ? JSON.parse(product.images) : (product.imageUrl ? [product.imageUrl] : []);
+
   return (
     <div className="min-h-screen bg-gray-100 text-black font-sans pb-24">
       {/* ใส่ max-w-md เพื่อให้ดูเหมือนหน้าจอมือถือเสมอ แม้จะเปิดบนคอม */}
       <div className="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative">
         
-        {/* รูปภาพสินค้า */}
-        <div className="w-full aspect-square bg-gray-50 flex items-center justify-center overflow-hidden relative">
-          {product.imageUrl ? (
-            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+        {/* รูปภาพสินค้าแบบ Carousel สไลด์ได้ */}
+        <div className="relative w-full aspect-square bg-gray-50 flex overflow-x-auto snap-x snap-mandatory hide-scrollbar">
+          {images.length > 0 ? (
+            images.map((imgUrl, idx) => (
+              <img key={idx} src={imgUrl} alt={`${product.name} - ${idx+1}`} className="w-full h-full object-cover flex-shrink-0 snap-center" />
+            ))
           ) : (
-            <div className="text-gray-400 flex flex-col items-center">
+            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
               <span className="text-4xl mb-2">📸</span>
               <span>ภาพสินค้ากำลังอัปเดต</span>
             </div>
           )}
+
+          {/* จุดบอกจำนวนรูป (Dots) ถ้ามีหลายรูป */}
+          {images.length > 1 && (
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none">
+              {images.map((_, idx) => (
+                <div key={idx} className="w-2 h-2 rounded-full bg-white/70 shadow-sm backdrop-blur-sm"></div>
+              ))}
+            </div>
+          )}
+          
           {/* Badge */}
-          <div className="absolute top-4 left-4 bg-black text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+          <div className="absolute top-4 left-4 bg-black text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider z-10">
             {product.category || 'Luma Skincare'}
           </div>
         </div>
@@ -94,6 +109,12 @@ export default async function PublicProductPage({ params }) {
         </div>
 
       </div>
+      
+      {/* เพิ่ม CSS เล็กน้อยสำหรับซ่อน Scrollbar ของ Carousel */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
     </div>
   );
 }

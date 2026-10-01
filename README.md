@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Luma Admin - Product Management System 🚀
 
-## Getting Started
+ระบบจัดการสินค้าหลังบ้าน (Admin Panel) สำหรับดูแลสินค้าและการสร้าง QR Code เพื่อให้ลูกค้าสแกนดูข้อมูลสินค้าผ่านมือถือแบบ Real-time 
+สร้างด้วย **Next.js**, **TailwindCSS**, **Prisma** และ **SQLite** (ครอบคลุมโจทย์และเงื่อนไขครบถ้วน 100%)
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 💻 1. วิธีติดตั้งและรันโปรเจกต์ (สำหรับกรรมการ)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **ติดตั้ง Dependencies:**
+   ```bash
+   npm install
+   ```
+2. **สร้าง Database และ Table:**
+   ```bash
+   npx prisma db push
+   ```
+3. **รันเซิร์ฟเวอร์:**
+   ```bash
+   npm run dev
+   ```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+**🔑 บัญชีสำหรับทดสอบ (Super Admin)**
+- **Email:** `superadmin@luma.com`
+- **Password:** `password`
+*(ระบบจะสร้างบัญชีนี้ให้อัตโนมัติในครั้งแรกที่เปิดใช้งานระบบ)*
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📱 วิธีทดสอบหน้า Mobile UI ผ่านมือถือจริงๆ
+เพื่อให้ QR Code สร้างลิงก์ที่สามารถสแกนด้วยมือถือได้จริง (แทนที่จะเป็น localhost) กรุณาทำตามนี้:
+1. เชื่อมต่อมือถือเข้ากับ Wi-Fi วงเดียวกับเครื่องคอมพิวเตอร์ที่รันระบบ
+2. หา IP Address ของคอมพิวเตอร์ (เช่น `192.168.1.X`)
+3. เปิดหน้า Admin บนคอมพิวเตอร์ผ่าน IP แทน localhost เช่น `http://192.168.1.X:3000/admin`
+4. เมื่อเข้าหน้าแก้ไขสินค้า ระบบจะดึง IP Address ไปฝังใน QR Code อัตโนมัติ คุณจะสามารถใช้มือถือสแกน QR หน้าจอเพื่อทดสอบ Mobile UI ได้ทันที
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠 2. Tech Stack ที่เลือกใช้ และเหตุผล
+- **Next.js (App Router):** เลือกใช้เพราะสามารถจัดการได้ทั้ง Frontend (React) และ Backend API ครบจบในโปรเจกต์เดียว ไม่ต้องแยก Repo ใช้งานง่ายและทำ Routing สะดวก
+- **Tailwind CSS:** ช่วยให้พัฒนา UI ได้อย่างรวดเร็วและสวยงาม รองรับ Mobile-responsive โดยไม่ต้องเขียน CSS เพิ่มให้วุ่นวาย
+- **Prisma + SQLite:** สะดวกในการทำ CRUD ไม่ต้องเสียเวลา Setup Database Server ภายนอก และเมื่อกรรมการ Clone โปรเจกต์ไปเทส ก็สามารถทำงานได้ทันทีแค่รันไฟล์เดียว
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## ✅ 3. สรุปฟีเจอร์ที่ทำเสร็จ
+1. **ระบบ Import Excel:** รองรับการนำเข้าไฟล์ ค้นหา/อัปเดต SKU เดิมที่มีอยู่แล้ว (Upsert)
+2. **ระบบจัดการ Error Data:** หากราคาผิดปกติ หรือมีสถานะที่ไม่ถูกต้อง ระบบจะดึงข้อมูลเข้าสู่ฐานข้อมูลเช่นกัน แต่จะเซ็ตค่าเบื้องต้นให้ใหม่ (ราคา=0, สถานะ=Inactive) พร้อมแจ้งเตือนให้แอดมินเข้าไปตามแก้ไข
+3. **ระบบ Sorting & Search (Client-side):** สามารถพิมพ์ค้นหาสินค้า และกดคลิกที่หัวตารางเพื่อเรียงลำดับคอลัมน์ได้ทันทีแบบลื่นไหล
+4. **อัปโหลดภาพแบบ Multiple (Carousel):** สามารถลากคลุมอัปโหลดภาพสินค้าได้หลายภาพพร้อมกัน และลบภาพที่ไม่ต้องการออกได้
+5. **QR Code Generator:** สร้าง QR Code อัตโนมัติ สามารถปรับขนาด, เปลี่ยนสีพื้นหลัง และกดดาวน์โหลดเป็นไฟล์ PNG ได้
+6. **Mobile-first Public Page:** หน้าแสกนสินค้าออกแบบมารองรับการแสดงผลบนมือถือ พร้อม Image Carousel สไลด์รูปซ้ายขวา และ Sticky Bottom Bar (แถบเมนูสั่งซื้อด้านล่าง)
+7. **ระบบสิทธิ์ Role & Invite:** สร้างระบบแยกสิทธิ์ Admin / Super Admin เมนูเชิญผู้ใช้ใหม่ (Invite) จะเห็นได้เฉพาะ Super Admin ผ่านการจำลองสร้าง Token ส่งทาง Console Log
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### ❌ ฟีเจอร์ที่ไม่ได้ทำ
+- **การส่งอีเมลเชิญแบบใช้ Email Server จริงๆ (Real Email Sending):** เปลี่ยนไปใช้การ Print Log ทาง Console แทน (ตามที่โจทย์อนุโลม) เพื่อความรวดเร็วและลดความซับซ้อนในการตั้งค่า SMTP
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🔄 4. ส่วนที่แตกต่างจากแผนที่วางไว้ (และเหตุผล)
+ในแผนเริ่มต้น (`PLAN.md`) ได้วางแผนไว้ว่าจะ "ข้าม" ฟีเจอร์การส่งอีเมลเชิญผู้ใช้งานเพื่อประหยัดเวลา แต่เมื่อประเมินเวลาในการพัฒนาแล้วพบว่ายังมีเวลาเหลือ จึงตัดสินใจ **นำกลับมาทำ** โดยใช้วิธี Generate Token และจำลองการส่งลิงก์เชิญ (Invite Link) ไปที่ Console Log แทน ทำให้ระบบมีความสมบูรณ์ 100% ครบทุกข้อตามที่โจทย์ระบุ
+
+---
+
+## 🤖 5. การใช้ AI ในการทำงาน
+ในโปรเจกต์นี้ มีการใช้งาน AI Assistant ช่วยเหลือในการวางโครงสร้างและเขียนโค้ดเพื่อความรวดเร็ว
+
+**💬 ตัวอย่างคำสั่ง (Prompts) ที่ใช้สั่ง AI:**
+- *"งั้นเดี๋ยวจะทำส่วน front-end ก่อนนะครับ ขอ Prompt ในการสร้าง front-end เพื่อให้ทำงานกับ back-end และ SQLite ด้วย"*
+- *"รูปสินค้า ทำให้ใส่ได้หลายรูปหน่อยครับ"*
+- *"หน้าสินค้าสาธารณะ: สแกน QR แล้วเห็นหน้าเว็บข้อมูลสินค้า ใช้งานบนมือถือได้ดี ทำยังไงดี"*
+
+**⚠️ ส่วนที่ AI ทำพลาดและวิธีแก้ไขด้วยตนเอง:**
+- **ปัญหา:** AI พยายามรันคำสั่ง `npx prisma init` ด้วย Flag ที่ไม่มีอยู่จริง หรือเจอ Error จากปลั๊กอิน (Telemetry Error) ทำให้การติดตั้งระบบ Database ชะงัก
+- **การแก้ไข:** เข้าไปควบคุมการพิมพ์คำสั่งใน Terminal ด้วยตนเอง จัดการแก้ Version ของ Prisma จาก v8 Beta ให้ดาวน์เกรดกลับมาเป็น `prisma@5` ที่เสถียรกว่า และรัน `npm install --ignore-scripts=false` เพื่อบังคับให้ Prisma Download Query Engine ได้สำเร็จ ก่อนจะให้ AI เข้ามาเขียนไฟล์โค้ดต่อ
