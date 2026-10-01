@@ -19,6 +19,8 @@ export default function ProductEditForm({ product }) {
   const qrRef = useRef();
   const publicUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/p/${product.sku}`;
 
+  const isDataIncomplete = product.price <= 0;
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -77,14 +79,21 @@ export default function ProductEditForm({ product }) {
       </div>
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow space-y-4">
         <h2 className="text-xl font-bold mb-4">แก้ไขข้อมูล (SKU: {product.sku})</h2>
-        <div><label className="block text-sm">ชื่อสินค้า</label><input type="text" value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} className="w-full border rounded p-2" required /></div>
-        <div><label className="block text-sm">หมวดหมู่</label><select value={formData.category} onChange={e=>setFormData({...formData, category: e.target.value})} className="w-full border rounded p-2"><option value="">-- เลือก --</option><option value="Cleanser">Cleanser</option><option value="Toner">Toner</option><option value="Serum">Serum</option><option value="Moisturizer">Moisturizer</option><option value="Sunscreen">Sunscreen</option><option value="Mask">Mask</option></select></div>
-        <div><label className="block text-sm">ราคา (บาท)</label><input type="number" min="1" value={formData.price} onChange={e=>setFormData({...formData, price: e.target.value})} className="w-full border rounded p-2" required /></div>
-        <div><label className="block text-sm">ขนาด</label><input type="text" value={formData.size} onChange={e=>setFormData({...formData, size: e.target.value})} className="w-full border rounded p-2" /></div>
-        <div><label className="block text-sm">รายละเอียด</label><textarea value={formData.description} onChange={e=>setFormData({...formData, description: e.target.value})} className="w-full border rounded p-2" rows="3"></textarea></div>
-        <div><label className="block text-sm">วิธีใช้</label><textarea value={formData.how_to_use} onChange={e=>setFormData({...formData, how_to_use: e.target.value})} className="w-full border rounded p-2" rows="2"></textarea></div>
-        <div><label className="block text-sm">สถานะ</label><select value={formData.status} onChange={e=>setFormData({...formData, status: e.target.value})} className="w-full border rounded p-2"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
-        <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-4">{loading ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}</button>
+        
+        {isDataIncomplete && (
+          <div className="p-3 bg-red-100 text-red-800 border border-red-300 rounded text-sm font-semibold mb-4">
+            ⚠️ ข้อมูลที่นำเข้าจาก Excel ไม่สมบูรณ์ หรือ มีข้อมูลผิดพลาด กรุณาตรวจสอบและแก้ไขข้อมูลให้ถูกต้อง (เช่น ราคา) ก่อนนำไปใช้งาน
+          </div>
+        )}
+
+        <div><label className="block text-sm font-bold">ชื่อสินค้า</label><input type="text" value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} className="w-full border rounded p-2" required /></div>
+        <div><label className="block text-sm font-bold">หมวดหมู่</label><select value={formData.category} onChange={e=>setFormData({...formData, category: e.target.value})} className="w-full border rounded p-2"><option value="">-- เลือก --</option><option value="Cleanser">Cleanser</option><option value="Toner">Toner</option><option value="Serum">Serum</option><option value="Moisturizer">Moisturizer</option><option value="Sunscreen">Sunscreen</option><option value="Mask">Mask</option><option value="Lotion">Lotion</option></select></div>
+        <div><label className="block text-sm font-bold">ราคา (บาท) <span className="text-red-500">*</span></label><input type="number" min="1" value={formData.price} onChange={e=>setFormData({...formData, price: e.target.value})} className={`w-full border rounded p-2 ${formData.price <= 0 ? 'border-red-500 bg-red-50' : ''}`} required /></div>
+        <div><label className="block text-sm font-bold">ขนาด</label><input type="text" value={formData.size} onChange={e=>setFormData({...formData, size: e.target.value})} className="w-full border rounded p-2" /></div>
+        <div><label className="block text-sm font-bold">รายละเอียด</label><textarea value={formData.description} onChange={e=>setFormData({...formData, description: e.target.value})} className="w-full border rounded p-2" rows="3"></textarea></div>
+        <div><label className="block text-sm font-bold">วิธีใช้</label><textarea value={formData.how_to_use} onChange={e=>setFormData({...formData, how_to_use: e.target.value})} className="w-full border rounded p-2" rows="2"></textarea></div>
+        <div><label className="block text-sm font-bold">สถานะ</label><select value={formData.status} onChange={e=>setFormData({...formData, status: e.target.value})} className={`w-full border rounded p-2 ${formData.status === 'inactive' ? 'border-red-300 text-red-600' : ''}`}><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-4 font-bold text-lg">{loading ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}</button>
       </form>
     </div>
   );
