@@ -47,62 +47,62 @@ export default function ProductTable({ initialProducts }) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-stone-100 overflow-hidden">
-      <div className="p-5 border-b border-stone-100 bg-white">
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="p-4 border-b bg-gray-50">
         <input 
           type="text" 
-          placeholder="🔍 ค้นหาสินค้าจาก ชื่อ, SKU หรือ หมวดหมู่..."
+          placeholder=" ค้นหาสินค้าจาก ชื่อ, SKU หรือ หมวดหมู่..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full border border-stone-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-rose-300 focus:ring-1 focus:ring-rose-300 bg-stone-50/50 text-stone-800 placeholder-stone-400 transition"
+          className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-stone-100">
-          <thead className="bg-stone-50/50">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-white">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-stone-500 uppercase tracking-wider">ลำดับ</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-stone-500 uppercase tracking-wider cursor-pointer select-none hover:bg-stone-100 transition" onClick={() => requestSort('sku')}>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">ลำดับ</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase cursor-pointer select-none hover:bg-gray-100" onClick={() => requestSort('sku')}>
                 SKU {getSortIcon('sku')}
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-stone-500 uppercase tracking-wider cursor-pointer select-none hover:bg-stone-100 transition" onClick={() => requestSort('name')}>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase cursor-pointer select-none hover:bg-gray-100" onClick={() => requestSort('name')}>
                 ชื่อสินค้า {getSortIcon('name')}
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-stone-500 uppercase tracking-wider cursor-pointer select-none hover:bg-stone-100 transition" onClick={() => requestSort('category')}>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase cursor-pointer select-none hover:bg-gray-100" onClick={() => requestSort('category')}>
                 หมวดหมู่ {getSortIcon('category')}
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-stone-500 uppercase tracking-wider cursor-pointer select-none hover:bg-stone-100 transition" onClick={() => requestSort('price')}>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase cursor-pointer select-none hover:bg-gray-100" onClick={() => requestSort('price')}>
                 ราคา {getSortIcon('price')}
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-stone-500 uppercase tracking-wider cursor-pointer select-none hover:bg-stone-100 transition" onClick={() => requestSort('status')}>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase cursor-pointer select-none hover:bg-gray-100" onClick={() => requestSort('status')}>
                 สถานะ {getSortIcon('status')}
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-stone-500 uppercase tracking-wider">จัดการ</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">จัดการ</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-stone-100">
+          <tbody className="bg-white divide-y divide-gray-200">
             {filteredProducts.length === 0 ? (
-              <tr><td colSpan="7" className="px-6 py-12 text-center text-stone-400">ไม่พบสินค้าที่ค้นหา</td></tr>
+              <tr><td colSpan="7" className="px-6 py-8 text-center text-gray-500">ไม่พบสินค้าที่ค้นหา</td></tr>
             ) : (
               filteredProducts.map((product, index) => (
-                <tr key={product.id} className="hover:bg-rose-50/30 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-stone-400 font-medium">{index + 1}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-800">{product.sku}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-stone-700">{product.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-stone-500">
+                <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">{index + 1}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{product.sku}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {product.category ? (
-                      <span className="bg-stone-100 text-stone-600 px-2.5 py-1 rounded-md text-xs font-medium border border-stone-200/50">{product.category}</span>
+                      <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs border border-gray-200">{product.category}</span>
                     ) : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-700">฿{product.price}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">฿{product.price}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${product.status === 'active' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100'}`}>
+                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${product.status === 'active' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
                       {product.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Link href={`/admin/products/${product.id}`} className="text-rose-500 hover:text-rose-700 font-semibold underline decoration-transparent hover:decoration-rose-300 transition">
-                      แก้ไข / อัปโหลดรูป
+                    <Link href={`/admin/products/${product.id}`} className="text-blue-600 hover:text-blue-900 font-semibold underline decoration-transparent hover:decoration-blue-900 transition">
+                      แก้ไข / จัดการรููปภาพ
                     </Link>
                   </td>
                 </tr>
