@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      String   @default("admin") // "super_admin" or "admin"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invite {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  token     String   @unique
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  sku         String     @unique
+  name        String
+  category    String?
+  price       Float
+  size        String?
+  description String?
+  how_to_use  String?
+  status      String     @default("active")
+  imageUrl    String?
+  qrCodeUrl   String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  ScanLog     ScanLog[]
+}
+
+model ScanLog {
+  id         Int      @id @default(autoincrement())
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  Int
+  scannedAt  DateTime @default(now())
+  userAgent  String?
+}
