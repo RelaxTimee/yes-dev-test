@@ -9,6 +9,8 @@ export default function ProductEditForm({ product }) {
     name: product.name || '', category: product.category || '', price: product.price || '',
     size: product.size || '', description: product.description || '', how_to_use: product.how_to_use || '', status: product.status || 'active',
   });
+  const predefinedCategories = ["Cleanser", "Toner", "Serum", "Moisturizer", "Sunscreen", "Mask", "Lotion"];
+  const [isCustomCategory, setIsCustomCategory] = useState(!predefinedCategories.includes(product.category) && product.category !== '' && product.category !== null);
   
   // แปลง images จาก JSON string ให้เป็น Array
   const initImages = product.images ? JSON.parse(product.images) : (product.imageUrl ? [product.imageUrl] : []);
@@ -135,7 +137,55 @@ export default function ProductEditForm({ product }) {
         )}
 
         <div><label className="block text-sm font-bold">ชื่อสินค้า</label><input type="text" value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} className="w-full border rounded p-2" required /></div>
-        <div><label className="block text-sm font-bold">หมวดหมู่</label><select value={formData.category} onChange={e=>setFormData({...formData, category: e.target.value})} className="w-full border rounded p-2"><option value="">-- เลือก --</option><option value="Cleanser">Cleanser</option><option value="Toner">Toner</option><option value="Serum">Serum</option><option value="Moisturizer">Moisturizer</option><option value="Sunscreen">Sunscreen</option><option value="Mask">Mask</option><option value="Lotion">Lotion</option></select></div>
+        <div>
+          <label className="block text-sm font-bold mb-1">หมวดหมู่</label>
+          {isCustomCategory ? (
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                value={formData.category} 
+                onChange={e => setFormData({...formData, category: e.target.value})} 
+                className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-400" 
+                placeholder="พิมพ์หมวดหมู่ใหม่ที่ต้องการ..." 
+                autoFocus
+              />
+              <button 
+                type="button" 
+                onClick={() => {
+                  setIsCustomCategory(false);
+                  setFormData({...formData, category: ''});
+                }}
+                className="bg-gray-200 px-4 rounded hover:bg-gray-300 text-sm font-bold text-gray-700 transition"
+              >
+                ยกเลิก
+              </button>
+            </div>
+          ) : (
+            <select 
+              value={predefinedCategories.includes(formData.category) ? formData.category : (formData.category ? formData.category : "")} 
+              onChange={e => {
+                if (e.target.value === 'ADD_NEW') {
+                  setIsCustomCategory(true);
+                  setFormData({...formData, category: ''});
+                } else {
+                  setFormData({...formData, category: e.target.value});
+                }
+              }} 
+              className="w-full border rounded p-2 focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="">-- เลือกหมวดหมู่ --</option>
+              {predefinedCategories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+              {/* ถ้าข้อมูลเก่าใน DB เป็นหมวดหมู่แปลกๆ ที่ไม่มีในลิสต์ ให้แสดงด้วย */}
+              {!predefinedCategories.includes(formData.category) && formData.category !== '' && (
+                <option value={formData.category}>{formData.category}</option>
+              )}
+              <option disabled>──────────</option>
+              <option value="ADD_NEW" className="font-bold text-blue-600">+ เพิ่มหมวดหมู่ใหม่เอง...</option>
+            </select>
+          )}
+        </div>
         <div><label className="block text-sm font-bold">ราคา (บาท) <span className="text-red-500">*</span></label><input type="number" min="1" value={formData.price} onChange={e=>setFormData({...formData, price: e.target.value})} className={`w-full border rounded p-2 ${formData.price <= 0 ? 'border-red-500 bg-red-50' : ''}`} required /></div>
         <div><label className="block text-sm font-bold">ขนาด</label><input type="text" value={formData.size} onChange={e=>setFormData({...formData, size: e.target.value})} className="w-full border rounded p-2" /></div>
         <div><label className="block text-sm font-bold">รายละเอียด</label><textarea value={formData.description} onChange={e=>setFormData({...formData, description: e.target.value})} className="w-full border rounded p-2" rows="3"></textarea></div>

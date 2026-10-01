@@ -16,7 +16,7 @@ export default function AdminLogin() {
     });
 
     if (res.ok) {
-      router.push('/admin/products');
+      window.location.href = '/admin/products';
     } else {
       const data = await res.json();
       alert(data.error);

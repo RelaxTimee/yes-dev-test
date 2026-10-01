@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import UploadExcelButton from './UploadExcelButton';
+import ExportExcelButton from './ExportExcelButton';
 import ProductTable from './ProductTable';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,10 @@ export default async function ProductsPage() {
     <div className="p-6 text-black">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">รายการสินค้า</h1>
-        <UploadExcelButton />
+        <div className="flex gap-3">
+          <ExportExcelButton />
+          <UploadExcelButton />
+        </div>
       </div>
 
       {topProduct && (

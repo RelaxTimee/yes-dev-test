@@ -7,7 +7,7 @@ export default function LogoutButton() {
   const handleLogout = () => {
     document.cookie = "adminAuth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "adminRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push('/admin');
+    window.location.href = '/admin';
   };
 
   return (
